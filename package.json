@@ -1,0 +1,19 @@
+{
+  "name": "password-sharing-tool",
+  "version": "1.0.0",
+  "description": "A tool to share passwords safely",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node .",
+    "start:dev": "npx nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Wilber Claudio",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
