@@ -2,7 +2,7 @@
   "name": "password-sharing-tool",
   "version": "1.0.0",
   "description": "A tool to share passwords safely",
-  "main": "src/index.js",
+  "main": "src/server.js",
   "scripts": {
     "start": "node .",
     "start:dev": "npx nodemon",
