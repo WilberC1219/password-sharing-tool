@@ -11,7 +11,11 @@
   "author": "Wilber Claudio",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "install": "^0.13.0",
+    "npm": "^9.7.1",
+    "sequelize": "^6.32.1",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
