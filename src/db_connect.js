@@ -1,7 +1,7 @@
-const usermodel = require("./models/user");
+const user = require("./models/user");
 
 //testing creating user and saving into the database
-const User = usermodel();
+const User = user();
 (async () => {
   try {
     const usr = await User.create({
