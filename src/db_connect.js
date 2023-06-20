@@ -1,16 +1,17 @@
-const { Sequelize } = require("sequelize");
+const usermodel = require("./models/user");
 
-const sequelize = new Sequelize({
-  dialect: "sqlite",
-  storage: "./.data/test.db",
-});
-
-//test connection to the database
+//testing creating user and saving into the database
+const User = usermodel();
 (async () => {
   try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
+    const usr = await User.create({
+      firstName: "wilber",
+      lastName: "Claudio",
+      password: "123abc",
+      email: "example2@example2.com",
+    });
+    console.log(usr);
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.error(`${error.name}, ${error.errors[0].message}`);
   }
 })();
