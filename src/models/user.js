@@ -78,8 +78,8 @@ module.exports = (sequelize, Datatypes) => {
   /**
    * Creates and stores a user into the database.
    * @param {Object} userObj - The user object containing the user's data.
-   * @returns {Promise<User|undefined>} - A Promise that resolves with the created user
-   * instance if successful, or undefined if an error occurs.
+   * @returns {Promise<User|Error>} - A Promise that resolves with the created user
+   * instance if successful, or Error if an error occurs.
    */
   User.createUser = async (userObj) => {
     try {
@@ -93,7 +93,7 @@ module.exports = (sequelize, Datatypes) => {
     } catch (error) {
       //error.name: the seq error|error.errors[0].message: describes cause of error
       console.error(`${error.name}, ${error.errors[0].message}`);
-      return undefined;
+      return error;
     }
   };
 
