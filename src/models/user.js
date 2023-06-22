@@ -1,10 +1,9 @@
 "use strict";
-const { Sequelize, DataTypes, Model } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const { uuidWithPrefix } = require("../utils/uuid");
-const env = process.env.NODE_ENV || "development";
-const config = require(__dirname + "/../config/database.json")[env];
+const { hash, genSalt } = require("bcryptjs");
 
-module.exports = (sequelize = new Sequelize(config), datatypes = DataTypes) => {
+module.exports = (sequelize, Datatypes) => {
   class User extends Model {
     /**
      * Helper method for defining associations.
@@ -20,23 +19,52 @@ module.exports = (sequelize = new Sequelize(config), datatypes = DataTypes) => {
       // Model attributes are defined here
       id: {
         type: DataTypes.UUID,
+        defaultValue: uuidWithPrefix(true, "usr"),
         primaryKey: true,
+        validate: {
+          notEmpty: true,
+        },
       },
       firstName: {
         type: DataTypes.STRING,
         allowNull: false,
+        set(value) {
+          this.setDataValue("firstName", value.trim().toLowerCase());
+        },
+        validate: {
+          notEmpty: true,
+          isLowercase: true,
+        },
       },
       lastName: {
         type: DataTypes.STRING,
         allowNull: false,
+        set(value) {
+          this.setDataValue("lastName", value.trim().toLowerCase());
+        },
+        validate: {
+          notEmpty: true,
+          isLowercase: true,
+        },
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        set(value) {
+          this.setDataValue("email", value.trim().toLowerCase());
+        },
+        validate: {
+          notEmpty: true,
+          isEmail: true,
+          isLowercase: true,
+        },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
     },
     {
@@ -46,10 +74,16 @@ module.exports = (sequelize = new Sequelize(config), datatypes = DataTypes) => {
     }
   );
 
-  //create unique id for user
-  User.beforeCreate((user) => {
-    user.id = uuidWithPrefix(true, "usr");
+  // hash password before storing it into the database
+  User.beforeCreate(async (user) => {
+    user.password = await hashStr(user.password);
   });
 
   return User;
 };
+
+//hashes string passed in
+async function hashStr(str) {
+  const salt = await genSalt(10);
+  return hash(str, salt);
+}
