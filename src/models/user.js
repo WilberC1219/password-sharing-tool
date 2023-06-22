@@ -4,16 +4,7 @@ const { uuidWithPrefix } = require("../utils/uuid");
 const { hash, genSalt } = require("bcryptjs");
 
 module.exports = (sequelize, Datatypes) => {
-  class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  }
+  class User extends Model {}
   User.init(
     {
       // Model attributes are defined here
@@ -74,15 +65,46 @@ module.exports = (sequelize, Datatypes) => {
     }
   );
 
-  // hash password before storing it into the database
+  /**
+   * Hashes the user's password before storing it into the database.
+   * @param {User} user - The user instance being created.
+   * @returns {Promise<void>} - A Promise that resolves when the password has been hashed
+   * and assigned to the user object.
+   */
   User.beforeCreate(async (user) => {
     user.password = await hashStr(user.password);
   });
 
+  /**
+   * Creates and stores a user into the database.
+   * @param {Object} userObj - The user object containing the user's data.
+   * @returns {Promise<User|undefined>} - A Promise that resolves with the created user
+   * instance if successful, or undefined if an error occurs.
+   */
+  User.createUser = async (userObj) => {
+    try {
+      // transaction is managed by sequelize. t.commit() and t.rollback() are automatic
+      const trnResult = await sequelize.transaction(async (t) => {
+        const usr = await User.create(userObj, { transaction: t });
+        return usr;
+      });
+
+      return trnResult;
+    } catch (error) {
+      //error.name: the seq error|error.errors[0].message: describes cause of error
+      console.error(`${error.name}, ${error.errors[0].message}`);
+      return undefined;
+    }
+  };
+
   return User;
 };
 
-//hashes string passed in
+/**
+ * Hashes the provided string.
+ * @param {string} str - The string to be hashed.
+ * @returns {Promise<string>} - A Promise that resolves with the hashed string.
+ */
 async function hashStr(str) {
   const salt = await genSalt(10);
   return hash(str, salt);
