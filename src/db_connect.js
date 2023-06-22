@@ -1,27 +1,31 @@
 const user = require("./models/user");
+const { Sequelize, DataTypes } = require("sequelize");
+const env = process.env.NODE_ENV || "development";
+const config = require(__dirname + "/config/database.json")[env];
+const User = require("./models/user")(new Sequelize(config), DataTypes);
 
 //testing creating user and saving into the database
-const User = user();
 (async () => {
   try {
-    /* Code to create and store a user into the database
+    /* Code to create and store a user into the database */
     const usr = await User.create({
-      firstName: "wilber",
-      lastName: "Claudio",
-      password: "123abc",
-      email: "example2@example2.com",
+      firstName: "WiLLy",
+      lastName: "BeanZZZ",
+      password: "abcdefgh",
+      email: "             WillyBeans123@Example.com      ",
     });
     console.log(usr);
-    */
 
-    /* Code to retrieve user from database (if they exist) */
-    const usr = await User.findOne({ where: { email: "seed@seedemail.com" } });
+    /* Code to retrieve user from database (if they exist) 
+
+    const usr = await User.findOne({ where: { email: "gmailoutlook@example.com" } });
     if (usr === null) {
       console.log("Not found!");
     } else {
       console.log(usr instanceof User); // true
       console.log(usr); // usr instance
     }
+    */
   } catch (error) {
     //error.name is the sql error, error.errors[0].message describe cause of error
     console.error(`${error.name}, ${error.errors[0].message}`);
