@@ -8,14 +8,15 @@ const User = require("./models/user")(new Sequelize(config), DataTypes);
 (async () => {
   try {
     /* Code to create and store a user into the database */
-    const usr = await User.create({
-      firstName: "WiLLy",
-      lastName: "BeanZZZ",
+    const userObj = {
+      firstName: "Anthony",
+      lastName: "Claudio",
       password: "abcdefgh",
-      email: "             WillyBeans123@Example.com      ",
-    });
-    console.log(usr);
+      email: "     AntBeans22@Example.com      ",
+    };
 
+    const creationResult = await User.createUser(userObj);
+    console.log(creationResult);
     /* Code to retrieve user from database (if they exist) 
 
     const usr = await User.findOne({ where: { email: "gmailoutlook@example.com" } });
