@@ -1,10 +1,8 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const env = process.env.NODE_ENV || "development";
-const config = require(__dirname + "/config/database.json")[env];
-const User = require("./models/user")(new Sequelize(config), DataTypes);
 const express = require("express");
 const app = express();
 const port = 3000;
+const db = require("./models/models_config");
+const { User } = db;
 
 app.use(express.json());
 
