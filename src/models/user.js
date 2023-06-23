@@ -1,9 +1,9 @@
 "use strict";
-const { DataTypes, Model } = require("sequelize");
+const { Model } = require("sequelize");
 const { uuidWithPrefix } = require("../utils/uuid");
 const { hash, genSalt } = require("bcryptjs");
 
-module.exports = (sequelize, Datatypes) => {
+module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
   User.init(
     {
