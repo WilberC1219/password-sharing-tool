@@ -3,6 +3,7 @@ const app = express();
 const port = 3000;
 const db = require("./models/models_config");
 const { User } = db;
+const { getErrorResponse } = require("./utils/error_utils");
 
 app.use(express.json());
 
@@ -17,14 +18,12 @@ app.get("/", (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     const creationResult = await User.createUser(req.body);
+    console.log(creationResult);
+    res.status(200).json({ message: "Sign up was successful" });
+  } catch (error) {
+    console.error(error);
 
-    if (creationResult.errors) {
-      res.status(400).json({ message: `Sign up failed` });
-    } else {
-      res.status(200).json({ message: "User sign up successful" });
-    }
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "internal_server_error" });
+    const { statusCode, errorMessage, cause } = getErrorResponse(error);
+    res.status(statusCode).json({ errorMessage, cause });
   }
 });
