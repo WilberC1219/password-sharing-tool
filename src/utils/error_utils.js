@@ -5,24 +5,29 @@
  */
 function getErrorResponse(error) {
   if (error.name === "SequelizeBaseError") {
-    statuscode = 400;
-    if (error.message == "Hashing error") {
-      statuscode = 500;
-      error.message = "Internal server error";
+    let statusCode = 400;
+    let errorMessage = "Sign up failed";
+    let cause = error.message;
+
+    if (error.message === "Hashing error") {
+      statusCode = 500;
+      cause = "Internal server error";
     }
-    return { statusCode: statuscode, errorMessage: "Sign up failed", cause: error.message };
+
+    return { statusCode, errorMessage, cause };
   } else if (error.errors && error.errors.length > 0) {
-    // iterate through all the errors detected
-    let statuscode = 400;
+    let statusCode = 400;
     const errorMap = {};
+
     error.errors.map((e) => {
       if (e.type.toLowerCase() === "unique violation" && e.path === "id") {
-        statuscode = 500;
+        statusCode = 500;
       }
       errorMap[e.type] = (errorMap[e.type] || []).concat({ field: e.path, validator: e.validatorKey });
     });
-    return { statusCode: statuscode, errorMessage: "Sign up failed", cause: errorMap };
+    return { statusCode, errorMessage: "Sign up failed", cause: errorMap };
   }
+
   return { statusCode: 500, errorMessage: "Sign up failed", cause: "Internal server error" };
 }
 
