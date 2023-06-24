@@ -77,7 +77,11 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     user.id = uuidWithPrefix(true, "usr");
-    user.password = await hashStr(user.password);
+    try {
+      user.password = await hashStr(user.password);
+    } catch (error) {
+      throw new Error("Hashing error");
+    }
   });
 
   /**
@@ -100,6 +104,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  User.login = async () => {
+    try {
+      // code to log the user in
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return User;
 };
 
@@ -109,6 +121,11 @@ module.exports = (sequelize, DataTypes) => {
  * @returns {Promise<string>} - A Promise that resolves with the hashed string.
  */
 async function hashStr(str) {
-  const salt = await genSalt(10);
-  return hash(str, salt);
+  try {
+    const salt = await genSalt(10);
+    const strHashed = await hash(str, salt);
+    return strHashed;
+  } catch (error) {
+    throw new Error("Hashing error");
+  }
 }
