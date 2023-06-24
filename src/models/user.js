@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Error, Model } = require("sequelize");
 const { uuidWithPrefix } = require("../utils/uuid");
 const { hash, genSalt } = require("bcryptjs");
 
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         set(value) {
-          this.setDataValue("firstName", value.trim().toLowerCase());
+          this.setDataValue("firstName", value ? value.trim().toLowerCase() : value);
         },
         validate: {
           notEmpty: true,
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         set(value) {
-          this.setDataValue("lastName", value.trim().toLowerCase());
+          this.setDataValue("lastName", value ? value.trim().toLowerCase() : value);
         },
         validate: {
           notEmpty: true,
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         set(value) {
-          this.setDataValue("email", value.trim().toLowerCase());
+          this.setDataValue("email", value ? value.trim().toLowerCase() : value);
         },
         validate: {
           notEmpty: true,
@@ -66,12 +66,16 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /**
-   * Hashes the user's password before storing it into the database.
+   * Hashes the user's password if it meets length requirements before storing it into the database.
    * @param {User} user - The user instance being created.
    * @returns {Promise<void>} - A Promise that resolves when the password has been hashed
    * and assigned to the user object.
    */
   User.beforeCreate(async (user) => {
+    if (user.password.length > 16 || user.password.length < 8) {
+      throw new Error("Password does not meet length requirement. Password must be 8 to 16 characters!");
+    }
+
     user.password = await hashStr(user.password);
   });
 
@@ -91,9 +95,7 @@ module.exports = (sequelize, DataTypes) => {
 
       return trnResult;
     } catch (error) {
-      //error.name: the seq error|error.errors[0].message: describes cause of error
-      console.error(`${error.name}, ${error.errors[0].message}`);
-      return error;
+      throw error;
     }
   };
 
