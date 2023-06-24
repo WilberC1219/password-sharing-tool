@@ -10,7 +10,7 @@ class AppError extends Error {
     super(message);
 
     this.cause = cause;
-    this.name = "App Error";
+    this.name = "AppError";
   }
 }
 
