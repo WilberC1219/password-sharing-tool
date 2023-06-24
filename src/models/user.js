@@ -1,7 +1,10 @@
 "use strict";
 const { Error, Model } = require("sequelize");
+const AppError = require("../errors/app_error");
+const UnauthorizedError = require("../errors/unauthorized_error");
+const NotFoundError = require("../errors/not_found_error");
 const { uuidWithPrefix } = require("../utils/uuid");
-const { hash, genSalt } = require("bcryptjs");
+const { hash, genSalt, compare } = require("bcryptjs");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
@@ -73,14 +76,14 @@ module.exports = (sequelize, DataTypes) => {
    */
   User.beforeCreate(async (user) => {
     if (user.password.length > 16 || user.password.length < 8) {
-      throw new Error("Password does not meet length requirement. Password must be 8 to 16 characters!");
+      throw new AppError("Password does not meet length requirement. Password must be 8 to 16 characters!");
     }
 
     user.id = uuidWithPrefix(true, "usr");
     try {
       user.password = await hashStr(user.password);
     } catch (error) {
-      throw new Error("Hashing error");
+      throw new AppError("Internal Server Error", "server");
     }
   });
 
@@ -104,11 +107,20 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  User.login = async () => {
+  User.login = async (loginObj) => {
+    // get email and password passed in
+    const { email, password } = loginObj;
+
     try {
-      // code to log the user in
+      const usr = await User.findOne({ where: { email } });
+      if (!usr) throw new NotFoundError(`No user found with email ${email}`);
+
+      const match = await compare(password, usr.password);
+      if (!match) throw new UnauthorizedError(`Invalid password entered`);
+
+      return usr;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   };
 
@@ -126,6 +138,6 @@ async function hashStr(str) {
     const strHashed = await hash(str, salt);
     return strHashed;
   } catch (error) {
-    throw new Error("Hashing error");
+    throw new AppError("Internal Server Error", "server");
   }
 }
