@@ -22,7 +22,24 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, cause } = getErrorResponse(error);
-    res.status(statusCode).json({ errorMessage, cause });
+    const { statusCode, errorMessage, details } = getErrorResponse(error, "Sign up failed.");
+    res.status(statusCode).json({ errorMessage, details });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const usr = await User.login(req.body);
+    if (!usr) {
+      return res.status(403).json({ message: "Invalid username or password" });
+    }
+
+    console.log(usr);
+    res.json({ message: "done", payload: usr, status: 200 });
+  } catch (error) {
+    console.error(error);
+
+    const { statusCode, errorMessage, details } = getErrorResponse(error, "login failed.");
+    res.status(statusCode).json({ errorMessage, details });
   }
 });
