@@ -5,7 +5,12 @@
  */
 function getErrorResponse(error) {
   if (error.name === "SequelizeBaseError") {
-    return { statusCode: 400, errorMessage: "Sign up failed", cause: error.message };
+    statuscode = 400;
+    if (error.message == "Hashing error") {
+      statuscode = 500;
+      error.message = "Internal server error";
+    }
+    return { statusCode: statuscode, errorMessage: "Sign up failed", cause: error.message };
   } else if (error.errors && error.errors.length > 0) {
     // iterate through all the errors detected
     let statuscode = 400;
