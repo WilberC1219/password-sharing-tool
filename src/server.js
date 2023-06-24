@@ -1,21 +1,12 @@
-const dotenv = require("dotenv");
+require("dotenv").config();
+const express = require("express");
 const app = express();
 const db = require("./models/models_config");
-const express = require("express");
 const { User } = db;
 const { getErrorResponse } = require("./utils/error_utils");
-const { jwt } = require("jsonwebtoken");
-dotenv.config();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(
-  expressjwt({
-    secret: process.env.JWT_SECRET,
-    algorithms: ["HS256"],
-  }).unless({ path: ["/login", "/signup", "/"] })
-);
-
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
