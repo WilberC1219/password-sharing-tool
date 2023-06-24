@@ -1,3 +1,8 @@
+/**
+ * Generates a standardized error response data on the provided error object.
+ * @param {Error} error - The error object.
+ * @returns {Object} An object with statusCode, errorMessage, and cause properties.
+ */
 function getErrorResponse(error) {
   if (error.name === "SequelizeBaseError") {
     return { statusCode: 400, errorMessage: "Sign up failed", cause: error.message };
