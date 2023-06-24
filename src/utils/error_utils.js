@@ -1,22 +1,17 @@
+const AppError = require("../errors/app_error");
+const UnauthorizedError = require("../errors/unauthorized_error");
+const NotFoundError = require("../errors/not_found_error");
 /**
  * Generates a standardized error response data on the provided error object.
  * @param {Error} error - The error object.
- * @returns {Object} An object with statusCode, errorMessage, and cause properties.
+ * @param {message} message - The error message
+ * @returns {Object} An object with statusCode, errorMessage, and cause attributes.
  */
-function getErrorResponse(error) {
-  if (error.name === "SequelizeBaseError") {
-    let statusCode = 400;
-    let errorMessage = "Sign up failed";
-    let cause = error.message;
+function getErrorResponse(error, message) {
+  let statusCode = 400; //by default assume this unless otherwise
 
-    if (error.message === "Hashing error") {
-      statusCode = 500;
-      cause = "Internal server error";
-    }
-
-    return { statusCode, errorMessage, cause };
-  } else if (error.errors && error.errors.length > 0) {
-    let statusCode = 400;
+  // an error defined by sequelize
+  if (error.errors && error.errors.length > 0) {
     const errorMap = {};
 
     error.errors.map((e) => {
@@ -25,10 +20,15 @@ function getErrorResponse(error) {
       }
       errorMap[e.type] = (errorMap[e.type] || []).concat({ field: e.path, validator: e.validatorKey });
     });
-    return { statusCode, errorMessage: "Sign up failed", cause: errorMap };
+    return { statusCode, errorMessage: message, details: errorMap };
   }
 
-  return { statusCode: 500, errorMessage: "Sign up failed", cause: "Internal server error" };
+  if (error instanceof NotFoundError || error instanceof UnauthorizedError) {
+    statusCode = error.code;
+  } else if (error.cause === "server") statusCode = 500;
+
+  // anything else is assumed to be an App Error
+  return { statusCode, errorMessage: message, details: error.message };
 }
 
 module.exports = { getErrorResponse };
