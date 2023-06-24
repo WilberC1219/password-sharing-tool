@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       // Model attributes are defined here
       id: {
         type: DataTypes.UUID,
-        defaultValue: uuidWithPrefix(true, "usr"),
         primaryKey: true,
         validate: {
           notEmpty: true,
@@ -66,16 +65,18 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /**
-   * Hashes the user's password if it meets length requirements before storing it into the database.
+   * Hashes the user's password if it meets length requirements
+   * and assigns the user a UUID before storing it into the database.
    * @param {User} user - The user instance being created.
    * @returns {Promise<void>} - A Promise that resolves when the password has been hashed
-   * and assigned to the user object.
+   * and and UUID is assigned to the user object.
    */
   User.beforeCreate(async (user) => {
     if (user.password.length > 16 || user.password.length < 8) {
       throw new Error("Password does not meet length requirement. Password must be 8 to 16 characters!");
     }
 
+    user.id = uuidWithPrefix(true, "usr");
     user.password = await hashStr(user.password);
   });
 
