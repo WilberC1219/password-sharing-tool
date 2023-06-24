@@ -17,9 +17,8 @@ app.get("/", (req, res) => {
 
 app.post("/signup", async (req, res) => {
   try {
-    const creationResult = await User.createUser(req.body);
-    console.log(creationResult);
-    res.status(200).json({ message: "Sign up was successful" });
+    await User.createUser(req.body);
+    res.status(200).json({ message: `Sign up was successful!` });
   } catch (error) {
     console.error(error);
 
