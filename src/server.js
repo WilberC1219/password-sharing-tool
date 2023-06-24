@@ -30,16 +30,13 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const usr = await User.login(req.body);
-    if (!usr) {
-      return res.status(403).json({ message: "Invalid username or password" });
-    }
 
     console.log(usr);
-    res.json({ message: "done", payload: usr, status: 200 });
+    res.status(200).json({ message: "done", payload: usr });
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, details } = getErrorResponse(error, "login failed.");
+    const { statusCode, errorMessage, details } = getErrorResponse(error, "Login failed.");
     res.status(statusCode).json({ errorMessage, details });
   }
 });
