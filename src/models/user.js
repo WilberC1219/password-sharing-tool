@@ -1,8 +1,6 @@
 "use strict";
 const { Error, Model } = require("sequelize");
-const AppError = require("../errors/app_error");
-const UnauthorizedError = require("../errors/unauthorized_error");
-const NotFoundError = require("../errors/not_found_error");
+const { ValidationError, UnauthorizedError, NotFoundError, InternalError } = require("../errors/errors");
 const { uuidWithPrefix } = require("../utils/uuid");
 const { hash, genSalt, compare } = require("bcryptjs");
 
@@ -76,14 +74,14 @@ module.exports = (sequelize, DataTypes) => {
    */
   User.beforeCreate(async (user) => {
     if (user.password.length > 16 || user.password.length < 8) {
-      throw new AppError("Password does not meet length requirement. Password must be 8 to 16 characters!");
+      throw new ValidationError("Password does not meet length requirement. Password must be 8 to 16 characters!");
     }
 
     user.id = uuidWithPrefix(true, "usr");
     try {
       user.password = await hashStr(user.password);
     } catch (error) {
-      throw new AppError("Internal Server Error", "server");
+      throw new InternalError();
     }
   });
 
@@ -118,7 +116,8 @@ module.exports = (sequelize, DataTypes) => {
       const match = await compare(password, usr.password);
       if (!match) throw new UnauthorizedError(`Invalid password entered`);
 
-      return usr;
+      //return user and jwt token
+      return { user: usr, token: "token" };
     } catch (error) {
       throw error;
     }
@@ -138,6 +137,6 @@ async function hashStr(str) {
     const strHashed = await hash(str, salt);
     return strHashed;
   } catch (error) {
-    throw new AppError("Internal Server Error", "server");
+    throw new InternalError();
   }
 }
