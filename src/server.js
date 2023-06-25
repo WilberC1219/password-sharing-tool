@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const db = require("./models/models_config");
 const { User } = db;
-const { getErrorResponse } = require("./utils/error_utils");
+const { getErrorResponse } = require("./errors/error_handler");
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
