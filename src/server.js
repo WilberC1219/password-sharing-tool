@@ -22,8 +22,8 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, details } = getErrorResponse(error, "Sign up failed.");
-    res.status(statusCode).json({ errorMessage, details });
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Sign up failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
 
@@ -36,7 +36,7 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, details } = getErrorResponse(error, "Login failed.");
-    res.status(statusCode).json({ errorMessage, details });
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Login failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
