@@ -30,9 +30,7 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const usr = await User.login(req.body);
-
-    console.log(usr);
-    res.status(200).json({ message: "done", payload: usr });
+    res.status(200).json({ message: "Login was successful", payload: usr });
   } catch (error) {
     console.error(error);
 
