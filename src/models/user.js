@@ -1,7 +1,10 @@
 "use strict";
-const { Error, Model } = require("sequelize");
+const { Model } = require("sequelize");
+const { ValidationError, UnauthorizedError, NotFoundError, InternalError } = require("../errors/errors");
 const { uuidWithPrefix } = require("../utils/uuid");
-const { hash, genSalt } = require("bcryptjs");
+const { compare } = require("bcryptjs");
+const { hashStr } = require("../utils/hash");
+const { genJwt } = require("../utils/genjwt");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
@@ -68,29 +71,34 @@ module.exports = (sequelize, DataTypes) => {
    * Hashes the user's password if it meets length requirements
    * and assigns the user a UUID before storing it into the database.
    * @param {User} user - The user instance being created.
-   * @returns {Promise<void>} - A Promise that resolves when the password has been hashed
-   * and and UUID is assigned to the user object.
+   * @throws {ValidationError} If theres an issue with input not meeting a requirement
+   * @throws {InternalError} If an unexpected error occurs during the hashing process.
    */
   User.beforeCreate(async (user) => {
     if (user.password.length > 16 || user.password.length < 8) {
-      throw new Error("Password does not meet length requirement. Password must be 8 to 16 characters!");
+      throw new ValidationError("Password does not meet length requirement. Password must be 8 to 16 characters!");
     }
 
     user.id = uuidWithPrefix(true, "usr");
-    user.password = await hashStr(user.password);
+    try {
+      user.password = await hashStr(user.password);
+    } catch (error) {
+      throw new InternalError();
+    }
   });
 
   /**
    * Creates and stores a user into the database.
-   * @param {Object} userObj - The user object containing the user's data.
-   * @returns {Promise<User|Error>} - A Promise that resolves with the created user
+   * @param {Object} payload - The user object containing the user's data.
+   * @returns {User} - A Promise that resolves with the created user
    * instance if successful, or Error if an error occurs.
+   * @throws {Error} If an unexpected error occurs during the create process.
    */
-  User.createUser = async (userObj) => {
+  User.createUser = async (payload) => {
     try {
       // transaction is managed by sequelize. t.commit() and t.rollback() are automatic
       const trnResult = await sequelize.transaction(async (t) => {
-        const usr = await User.create(userObj, { transaction: t });
+        const usr = await User.create(payload, { transaction: t });
         return usr;
       });
 
@@ -100,15 +108,30 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  /**
+   * Authenticates a user by their email and password.
+   * @param {Object} payload - The user login payload containing email and password.
+   * @returns {Object} An object containing the authenticated user's first name, email, and a json web token.
+   * @throws {NotFoundError} If no user is found with the provided email.
+   * @throws {UnauthorizedError} If an invalid password is entered.
+   * @throws {Error} If an unexpected error occurs during the login process.
+   */
+  User.login = async (payload) => {
+    try {
+      const { email, password } = payload;
+      const usr = await User.findOne({ where: { email } });
+      if (!usr) throw new NotFoundError(`No user found with email ${email}`);
+
+      const match = await compare(password, usr.password);
+      if (!match) throw new UnauthorizedError(`Invalid password entered`);
+
+      const { id, firstName } = usr;
+      const jwt = await genJwt({ id, firstName, email });
+      return { user: { firstName, email }, token: jwt };
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return User;
 };
-
-/**
- * Hashes the provided string.
- * @param {string} str - The string to be hashed.
- * @returns {Promise<string>} - A Promise that resolves with the hashed string.
- */
-async function hashStr(str) {
-  const salt = await genSalt(10);
-  return hash(str, salt);
-}

@@ -1,6 +1,9 @@
 node_modules/
 src/tests/
+.vscode/
+
 .data
 .DS_Store
+.env
 
 schema.txt

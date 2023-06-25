@@ -1,12 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-const port = 3000;
 const db = require("./models/models_config");
 const { User } = db;
-const { getErrorResponse } = require("./utils/error_utils");
+const { getErrorResponse } = require("./errors/error_handler");
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
-
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
@@ -22,7 +22,19 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, cause } = getErrorResponse(error);
-    res.status(statusCode).json({ errorMessage, cause });
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Sign up failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const usr = await User.login(req.body);
+    res.status(200).json({ message: "Login was successful", payload: usr });
+  } catch (error) {
+    console.error(error);
+
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Login failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
