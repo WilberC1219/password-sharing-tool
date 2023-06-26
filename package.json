@@ -9,6 +9,7 @@
     "migrate:up": "npx sequelize-cli db:migrate --",
     "migrate:down": "npx sequelize-cli db:migrate:undo --",
     "migrate:down:all": "npx sequelize-cli db:migrate:undo:all --",
+    "migrate:options": "npx sequelize-cli db:migrate --help",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Wilber Claudio",
