@@ -12,7 +12,9 @@ A password sharing tool designed for sharing passwords securely
 
 ## Features
 
-- Coming Soon
+- Sign-up: Users can register for an account by providing their necessary information.
+
+- Login: Users can enter their credentials (such as email and password) to log in to their accounts. After successful login, users are given a JSON Web Token that can be used for secure subsequent authenticated requests.
 
 ## Technologies Used
 
@@ -29,7 +31,31 @@ A password sharing tool designed for sharing passwords securely
 
 ## Available Scripts
 
-- Coming Soon
+Scripts that are useful to know about in this project:
+
+### `npm start`
+
+Starts the server in production mode, utilizing the port specified by the environment variable `PORT`. If the `PORT` environment variable is not set, the server defaults to listening on port 3000.
+
+### `npm run start:dev`
+
+Starts the server in development mode using the nodemon tool. With nodemon, the server automatically restarts whenever changes are made to any `.js` file in the `src` directory by default. To customize the configuration settings for nodemon, modify the `nodemon.json` file located at the root directory of this project.
+
+### `npm run migrate:up`
+
+Used to apply pending database migrations. This command runs all pending migrations in the `src/migrations` directory and applies them to the database.
+
+### `npm run migrate:down`
+
+Used to undo the last applied database migration. This command reverts the most recent migration applied to the database.
+
+### `npm run migrate:down:all`
+
+Used to undo all applied database migrations. This command reverts all previously applied migrations in reverse order.
+
+### `npm run migrate:options`
+
+This command provides you with a reference to understand and utilize the various flags and functionalities available when performing migrations.
 
 ## License
 
