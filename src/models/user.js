@@ -118,7 +118,7 @@ module.exports = (sequelize, DataTypes) => {
    */
   User.login = async (payload) => {
     try {
-      const { email, password } = payload;
+      let { email, password } = payload;
       if (!email || !password) throw new ValidationError("login info cannot be null");
 
       email = email.toLowerCase();
