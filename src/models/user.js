@@ -119,6 +119,9 @@ module.exports = (sequelize, DataTypes) => {
   User.login = async (payload) => {
     try {
       const { email, password } = payload;
+      if (!email || !password) throw new ValidationError("login info cannot be null");
+
+      email = email.toLowerCase();
       const usr = await User.findOne({ where: { email } });
       if (!usr) throw new NotFoundError(`No user found with email ${email}`);
 
