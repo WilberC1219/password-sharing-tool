@@ -38,3 +38,14 @@ app.post("/login", async (req, res) => {
     res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
+
+app.post("/save-password", async (req, res) => {
+  try {
+    console.log(req);
+  } catch (error) {
+    console.error(error);
+
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "saving password failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
+  }
+});
