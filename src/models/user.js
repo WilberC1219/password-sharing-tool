@@ -130,7 +130,7 @@ module.exports = (sequelize, DataTypes) => {
 
       const { id, firstName } = usr;
       const jwt = await genJwt({ id, firstName, email });
-      return { user: { firstName, email }, token: jwt };
+      return { user: { firstName, email }, token: jwt }; //might be need to remove the user object, seems useless
     } catch (error) {
       throw error;
     }
