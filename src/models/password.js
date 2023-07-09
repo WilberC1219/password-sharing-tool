@@ -6,6 +6,7 @@ const { uuidWithPrefix } = require("../utils/uuid");
 const { compare } = require("bcryptjs");
 const { hashStr } = require("../utils/hash");
 const { genJwt } = require("../utils/genjwt");
+const { encrypt, decrypt } = require("../utils/encryption");
 
 module.exports = (sequelize, DataTypes) => {
   const User = user(sequelize, DataTypes);
@@ -34,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       shared_to_id: {
         type: DataTypes.UUID,
+        defaultValue: null,
         references: {
           model: User,
           key: "id",
@@ -76,12 +78,11 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      details: {
-        type: DataTypes.TEXT,
-        defaultValue: "",
+      label: {
+        type: DataTypes.STRING,
         allowNull: false,
         set(value) {
-          this.setDataValue("details", value ? value.trim() : value);
+          this.setDataValue("label", value ? value.trim() : value);
         },
       },
     },
@@ -106,15 +107,33 @@ module.exports = (sequelize, DataTypes) => {
     if (!password.owner_id || password.owner_id.length === 0) {
       throw new ValidationError("owner_id was not assigned a value!");
     }
-
-    // assigned a uuid, encrypt password using key, then store key as hash
     password.id = uuidWithPrefix(true, "pwd");
     try {
-      // must complete this
+      // login, password, lable must be encrypted with key.
+      password.login = encrypt(password.login, key);
+      password.password = encrypt(password.password, key);
+      password.label = encrypt(password.label, key);
+
+      // hash key
+      password.key = await hashStr(password.key);
     } catch (error) {
       throw new InternalError();
     }
   });
+
+  // store password to the database
+  Password.createPassword = async (payload) => {
+    try {
+      const trxResult = await sequelize.transaction(async (t) => {
+        const pwd = await Password.create(payload, { transaction: t });
+        return pwd;
+      });
+
+      return pwd;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   return Password;
 };
