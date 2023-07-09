@@ -5,8 +5,8 @@ const db = require("./models/models_config");
 const { User, Password } = db;
 const { getErrorResponse } = require("./errors/error_handler");
 const port = process.env.PORT || 3000;
-const { verify, verifyJwt } = require("./utils/genjwt");
-const { UnauthorizedError } = require("./errors/errors");
+const { verifyJwt } = require("./utils/genjwt");
+
 app.use(express.json());
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
