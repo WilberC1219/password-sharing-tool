@@ -32,11 +32,4 @@ function decrypt(encStr, key) {
   return decrypted;
 }
 
-const s = "Hello world!";
-const key = "abc123$";
-const encS = encrypt(s, key);
-console.log(encS);
-
-console.log(decrypt(encS, key));
-
 module.exports = { encrypt, decrypt };
