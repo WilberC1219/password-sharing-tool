@@ -110,12 +110,14 @@ module.exports = (sequelize, DataTypes) => {
     password.id = uuidWithPrefix(true, "pwd");
     try {
       // login, password, lable must be encrypted with key.
+      /*
       password.login = encrypt(password.login, key);
       password.password = encrypt(password.password, key);
       password.label = encrypt(password.label, key);
 
       // hash key
       password.key = await hashStr(password.key);
+      */
     } catch (error) {
       throw new InternalError();
     }
@@ -129,7 +131,7 @@ module.exports = (sequelize, DataTypes) => {
         return pwd;
       });
 
-      return pwd;
+      return trxResult;
     } catch (error) {
       throw error;
     }
