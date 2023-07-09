@@ -71,18 +71,18 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      key: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
       label: {
         type: DataTypes.STRING,
         allowNull: false,
         set(value) {
           this.setDataValue("label", value ? value.trim() : value);
+        },
+      },
+      key: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
         },
       },
     },
