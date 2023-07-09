@@ -2,10 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const db = require("./models/models_config");
-const { User } = db;
+const { User, Password } = db;
 const { getErrorResponse } = require("./errors/error_handler");
 const port = process.env.PORT || 3000;
-
+const { verify, verifyJwt } = require("./utils/genjwt");
+const { UnauthorizedError } = require("./errors/errors");
 app.use(express.json());
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
@@ -41,7 +42,18 @@ app.post("/login", async (req, res) => {
 
 app.post("/save-password", async (req, res) => {
   try {
-    console.log(req);
+    //verify the token is valid
+    const decodedToken = await verifyJwt(req.body.token);
+
+    // retrieve data for password payload
+    const owner_id = decodedToken.id;
+    const { url, login, password, label, key } = req.body;
+
+    // store password
+    const result = await Password.createPassword({ owner_id, url, login, password, label, key });
+    console.log(result);
+
+    res.status(200).json({ message: `Password was successfully saved!` });
   } catch (error) {
     console.error(error);
 
