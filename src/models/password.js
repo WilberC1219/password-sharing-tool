@@ -77,6 +77,9 @@ module.exports = (sequelize, DataTypes) => {
         set(value) {
           this.setDataValue("label", value ? value.trim() : value);
         },
+        validate: {
+          notEmpty: true,
+        },
       },
       key: {
         type: DataTypes.STRING,
