@@ -1,6 +1,13 @@
 const crypto = require("crypto");
 const algorithm = "aes-256-ctr";
 
+/**
+ * Encrypts a given string using the provided key.
+ *
+ * @param {string} str - The string to be encrypted.
+ * @param {string} key - The encryption key.
+ * @returns {string} - The encrypted string in the format "<encrypted>-<initialization vector>".
+ */
 function encrypt(str, key) {
   const iv = crypto.randomBytes(16);
   const encKey = crypto.createHash("sha256").update(String(key)).digest("base64").slice(0, 32);
@@ -9,6 +16,13 @@ function encrypt(str, key) {
   return `${crypted}-${iv.toString("base64")}`;
 }
 
+/**
+ * Decrypts an encrypted string using the provided key.
+ *
+ * @param {string} encStr - The encrypted string to be decrypted in the format "<encrypted>-<initialization vector>".
+ * @param {string} key - The decryption key.
+ * @returns {string} - The decrypted string.
+ */
 function decrypt(encStr, key) {
   const encArr = encStr.split("-");
   const encKey = crypto.createHash("sha256").update(String(key)).digest("base64").slice(0, 32);
@@ -24,3 +38,5 @@ const encS = encrypt(s, key);
 console.log(encS);
 
 console.log(decrypt(encS, key));
+
+module.exports = { encrypt, decrypt };
