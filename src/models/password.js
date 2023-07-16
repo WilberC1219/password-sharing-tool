@@ -140,5 +140,31 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  Password.getSavedPasswords = async (ownerId) => {
+    try {
+      if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
+
+      const row_list = await Password.findAll({
+        where: {
+          owner_id: ownerId,
+          shared_to_id: null,
+        },
+        attributes: {
+          exclude: ["id", "owner_id", "shared_to_id", "createdAt", "updatedAt"],
+        },
+      });
+
+      // will not handle decrypting the data yet, add that later
+      const password_list = [];
+      row_list.map((row) => {
+        password_list.push(row.dataValues);
+      });
+
+      return password_list;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return Password;
 };
