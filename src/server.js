@@ -3,11 +3,19 @@ const express = require("express");
 const app = express();
 const db = require("./models/models_config");
 const { User, Password } = db;
+const { expressjwt } = require("express-jwt");
 const { getErrorResponse } = require("./errors/error_handler");
 const port = process.env.PORT || 3000;
 const { verifyJwt } = require("./utils/genjwt");
 
 app.use(express.json());
+app.use(
+  expressjwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ["HS256"],
+  }).unless({ path: ["/login", "/signup", "/"] })
+);
+
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
