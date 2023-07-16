@@ -53,7 +53,6 @@ app.post("/save-password", async (req, res) => {
     const owner_id = req.auth.id;
     const { url, login, password, label, key } = req.body;
 
-    // save password
     const result = await Password.createPassword({ owner_id, url, login, password, label, key });
     res.status(200).json({ message: `Password was successfully saved!` });
   } catch (error) {
@@ -66,7 +65,14 @@ app.post("/save-password", async (req, res) => {
 
 app.post("/list-saved-passwords", async (req, res) => {
   try {
+    const owner_id = req.auth.id;
+    const result = await Password.getSavedPasswords(owner_id);
+
+    res.status(200).json({ message: `Successfully retrieved saved passwords!`, data: result });
   } catch (error) {
     console.error(error);
+
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "saving password failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
