@@ -50,22 +50,23 @@ app.post("/login", async (req, res) => {
 
 app.post("/save-password", async (req, res) => {
   try {
-    //verify the token is valid
-    const decodedToken = await verifyJwt(req.body.token);
-
-    // retrieve data for password payload
-    const owner_id = decodedToken.id;
+    const owner_id = req.auth.id;
     const { url, login, password, label, key } = req.body;
 
-    // store password
+    // save password
     const result = await Password.createPassword({ owner_id, url, login, password, label, key });
-    console.log(result);
-
     res.status(200).json({ message: `Password was successfully saved!` });
   } catch (error) {
     console.error(error);
 
     const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "saving password failed.");
     res.status(statusCode).json({ errorMessage, errorDetails });
+  }
+});
+
+app.post("/list-saved-passwords", async (req, res) => {
+  try {
+  } catch (error) {
+    console.error(error);
   }
 });
