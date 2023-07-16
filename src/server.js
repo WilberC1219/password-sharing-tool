@@ -6,7 +6,6 @@ const { User, Password } = db;
 const { expressjwt } = require("express-jwt");
 const { getErrorResponse } = require("./errors/error_handler");
 const port = process.env.PORT || 3000;
-const { verifyJwt } = require("./utils/genjwt");
 
 app.use(express.json());
 app.use(
