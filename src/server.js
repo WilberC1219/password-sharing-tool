@@ -19,8 +19,16 @@ app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
+app.post("/session", (req, res) => {
+  try {
+    // 200 success res
+    res.status(200).json({ sessionValid: true });
+  } catch (error) {
+    console.error(error);
+
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Session expired, please log back in");
+    res.status(statusCode).json({ errorMessage, errorDetails });
+  }
 });
 
 app.post("/signup", async (req, res) => {
