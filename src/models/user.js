@@ -59,6 +59,13 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      key: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
     },
     {
       // Other model options go here
@@ -78,10 +85,14 @@ module.exports = (sequelize, DataTypes) => {
     if (user.password.length > 16 || user.password.length < 8) {
       throw new ValidationError("Password does not meet length requirement. Password must be 8 to 16 characters!");
     }
+    if (user.key.length > 10 || user.key.length < 5) {
+      throw new ValidationError("Key does not meet length requirement. Key must be 6 to 10 characters");
+    }
 
-    user.id = uuidWithPrefix(true, "usr");
     try {
+      user.id = uuidWithPrefix(true, "usr");
       user.password = await hashStr(user.password);
+      user.key = await hashStr(user.key);
     } catch (error) {
       throw new InternalError();
     }
