@@ -81,13 +81,6 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      key: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
     },
     {
       // Other model options go here
@@ -98,11 +91,6 @@ module.exports = (sequelize, DataTypes) => {
 
   //things that must be done before password is saved to database
   Password.beforeCreate(async (password) => {
-    // validate key must be 6-10 characters, ensure that both owner_id and shared_to_Id !=
-    if (password.key.length < 6 || password.key.length > 10) {
-      throw new ValidationError("key does not meet length requirement. key must be 6 to 10 characters!");
-    }
-
     if (password.owner_id === password.shared_to_id) {
       throw new ValidationError("owner_id cannot be equal to shared_to_id!");
     }
