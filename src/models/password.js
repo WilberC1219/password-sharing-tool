@@ -110,8 +110,9 @@ module.exports = (sequelize, DataTypes) => {
     if (!password.owner_id || password.owner_id.length === 0) {
       throw new ValidationError("owner_id was not assigned a value!");
     }
-    password.id = uuidWithPrefix(true, "pwd");
+
     try {
+      password.id = uuidWithPrefix(true, "pwd");
       // login, password, lable must be encrypted with key.
       /*
       password.login = encrypt(password.login, key);
