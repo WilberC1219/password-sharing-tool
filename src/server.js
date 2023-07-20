@@ -58,9 +58,9 @@ app.post("/login", async (req, res) => {
 app.post("/save-password", async (req, res) => {
   try {
     const owner_id = req.auth.id;
-    const { url, login, password, label, key } = req.body;
+    const { url, login, password, label } = req.body;
 
-    const result = await Password.createPassword({ owner_id, url, login, password, label, key });
+    const result = await Password.createPassword({ owner_id, url, login, password, label });
     res.status(200).json({ message: `Password was successfully saved!` });
   } catch (error) {
     console.error(error);
