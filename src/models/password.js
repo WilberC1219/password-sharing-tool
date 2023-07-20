@@ -139,7 +139,7 @@ module.exports = (sequelize, DataTypes) => {
           shared_to_id: null,
         },
         attributes: {
-          exclude: ["id", "owner_id", "shared_to_id", "createdAt", "updatedAt"],
+          exclude: ["owner_id", "shared_to_id", "createdAt", "updatedAt"],
         },
       });
 
