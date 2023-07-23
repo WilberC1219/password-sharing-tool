@@ -100,6 +100,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     try {
+      // ADD ENCRYPT/DECRYPT
       password.id = uuidWithPrefix(true, "pwd");
       // login, password, lable must be encrypted with key.
       /*
@@ -138,6 +139,7 @@ module.exports = (sequelize, DataTypes) => {
   // retrieves all saved password of provided id
   Password.getSavedPasswords = async (ownerId) => {
     try {
+      // ADD ENCRYPT/DECRYPT?
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
 
       const row_list = await Password.findAll({
@@ -173,6 +175,7 @@ module.exports = (sequelize, DataTypes) => {
    */
   Password.findById = async (id) => {
     try {
+      // ADD ENCRYPT/DECRYPT
       if (!id || id.length === 0) {
         throw new ValidationError("password id cannot be null or empty");
       }
@@ -187,6 +190,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Password.sharePassword = async (ownerId, sharedToEmail, id) => {
     try {
+      // ADD ENCRYPT/DECRYPT
       if (!sharedToEmail || sharedToEmail.length === 0) {
         throw new ValidationError("shared_to_id was not assigned a value");
       }
