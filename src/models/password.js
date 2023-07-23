@@ -91,12 +91,12 @@ module.exports = (sequelize, DataTypes) => {
 
   //things that must be done before password is saved to database
   Password.beforeCreate(async (password) => {
-    if (password.owner_id === password.shared_to_id) {
-      throw new ValidationError("owner_id cannot be equal to shared_to_id!");
-    }
-
     if (!password.owner_id || password.owner_id.length === 0) {
       throw new ValidationError("owner_id was not assigned a value!");
+    }
+
+    if (password.owner_id === password.shared_to_id) {
+      throw new ValidationError("owner_id cannot be equal to shared_to_id!");
     }
 
     try {
@@ -153,6 +153,10 @@ module.exports = (sequelize, DataTypes) => {
     } catch (error) {
       throw error;
     }
+  };
+
+  Password.sharePassword = async (payload) => {
+    // what data is required to share password? all column data
   };
 
   return Password;
