@@ -147,5 +147,18 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  User.findByEmail = async (email) => {
+    try {
+      if (!email || email.length === 0) throw new ValidationError("email info cannot be null or empty");
+
+      email = email.toLowerCase();
+      const usr = await User.findOne({ where: { email } });
+      if (!usr) throw new NotFoundError(`No user found with email ${email}`);
+      return usr;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return User;
 };
