@@ -65,7 +65,7 @@ app.post("/save-password", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "saving password failed.");
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Saving password failed.");
     res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
@@ -79,12 +79,21 @@ app.post("/list-saved-passwords", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "saving password failed.");
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Getting saving passwords failed.");
     res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
 
 app.post("/share-password", async (req, res) => {
   try {
-  } catch (error) {}
+    const owner_id = req.auth.id;
+    const { shared_to_email, password_id } = req.body;
+    const pwd = await Password.sharePassword(owner_id, shared_to_email, password_id);
+    res.status(200).json({ message: `Successfully shared password with ${shared_to_email}` });
+  } catch (error) {
+    console.error(error);
+
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Sharing password failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
+  }
 });
