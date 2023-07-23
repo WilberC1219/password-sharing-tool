@@ -83,3 +83,8 @@ app.post("/list-saved-passwords", async (req, res) => {
     res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
+
+app.post("/share-password", async (req, res) => {
+  try {
+  } catch (error) {}
+});
