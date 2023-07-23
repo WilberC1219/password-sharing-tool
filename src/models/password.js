@@ -168,6 +168,8 @@ module.exports = (sequelize, DataTypes) => {
    * @throws {ValidationError} If the provided id is null or empty.
    * @throws {NotFoundError} If no password is found with the provided id.
    * @returns {Object} the password object associated with the id.
+   * Note that the returned password object will still have the Url, login,
+   * password, and label encrypted.
    */
   Password.findById = async (id) => {
     try {
@@ -183,18 +185,29 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  Password.sharePassword = async (owner_id, payload) => {
-    // what data is required to share password? all column data
+  Password.sharePassword = async (ownerId, sharedToEmail, id) => {
     try {
-      const { shared_to_email, password_id, url, login, password, label } = payload;
-
-      // verify shared_to_email
-      if (!shared_to_email || shared_to_email.length === 0) {
+      if (!sharedToEmail || sharedToEmail.length === 0) {
         throw new ValidationError("shared_to_id was not assigned a value");
       }
-      const shared_to_user = await User.findByEmail(shared_to_email);
+      const sharedToUser = await User.findByEmail(sharedToEmail);
 
-      // verify password_id
+      if (!id || id.length === 0) {
+        throw new ValidationError("password id was not assigned a value");
+      }
+      const pwdFound = await Password.findById(id);
+
+      const payload = {
+        owner_id: ownerId,
+        shared_to_id: sharedToUser.id,
+        url: pwdFound.url,
+        login: pwdFound.login,
+        password: pwdFound.password,
+        label: pwdFound.label,
+      };
+
+      const sharedPassword = await Password.createPassword(payload);
+      return sharedPassword;
     } catch (error) {
       throw error;
     }
