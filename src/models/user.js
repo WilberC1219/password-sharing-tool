@@ -147,6 +147,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  /**
+   * Find a user by their email address.
+   * @param {string} email - The email address of the user to be found.
+   * @throws {ValidationError} If the provided email is null or empty.
+   * @throws {NotFoundError} If no user is found with the provided email.
+   * @returns {Object} the user object found associated with the email.
+   */
   User.findByEmail = async (email) => {
     try {
       if (!email || email.length === 0) throw new ValidationError("email info cannot be null or empty");
