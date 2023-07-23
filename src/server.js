@@ -97,3 +97,16 @@ app.post("/share-password", async (req, res) => {
     res.status(statusCode).json({ errorMessage, errorDetails });
   }
 });
+
+app.post("/list-shared-passwords", async (req, res) => {
+  try {
+    const owner_id = req.auth.id;
+    const result = await Password.getSharedPasswords(owner_id);
+    res.status(200).json({ message: `Successfully retrieved shared passwords!`, data: result });
+  } catch (error) {
+    console.error(error);
+
+    const { statusCode, errorMessage, errorDetails } = getErrorResponse(error, "Getting shared passwords failed.");
+    res.status(statusCode).json({ errorMessage, errorDetails });
+  }
+});
