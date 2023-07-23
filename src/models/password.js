@@ -115,7 +115,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  // store password to the database
+  /**
+   * Creates and stores a password into the database.
+   * @param {Object} payload - The password object containing the password data.
+   * @returns {Password} - A Promise that resolves with the created password
+   * instance if successful, or Error if an error occurs.
+   * @throws {Error} If an unexpected error occurs during the create process.
+   */
   Password.createPassword = async (payload) => {
     try {
       const trxResult = await sequelize.transaction(async (t) => {
@@ -129,6 +135,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  // retrieves all saved password of provided id
   Password.getSavedPasswords = async (ownerId) => {
     try {
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
@@ -155,6 +162,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  /**
+   * Find a password by its id.
+   * @param {string} id - The id of the password to be found.
+   * @throws {ValidationError} If the provided id is null or empty.
+   * @throws {NotFoundError} If no password is found with the provided id.
+   * @returns {Object} the password object associated with the id.
+   */
   Password.findById = async (id) => {
     try {
       if (!id || id.length === 0) {
