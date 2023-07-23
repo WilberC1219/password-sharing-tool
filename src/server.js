@@ -89,7 +89,7 @@ app.post("/share-password", async (req, res) => {
     const owner_id = req.auth.id;
     const { shared_to_email, password_id } = req.body;
     const pwd = await Password.sharePassword(owner_id, shared_to_email, password_id);
-    res.status(200).json({ message: `Successfully shared password with ${shared_to_email}` });
+    res.status(200).json({ message: `Successfully shared password with ${shared_to_email}`, shared_password: pwd });
   } catch (error) {
     console.error(error);
 
