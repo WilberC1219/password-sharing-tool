@@ -155,8 +155,35 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  Password.sharePassword = async (payload) => {
+  Password.findById = async (id) => {
+    try {
+      if (!id || id.length === 0) {
+        throw new ValidationError("password id cannot be null or empty");
+      }
+
+      const pwd = await Password.findOne({ where: { id } });
+      if (!pwd) throw new NotFoundError(`No password found with id ${id}`);
+      return pwd;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  Password.sharePassword = async (owner_id, payload) => {
     // what data is required to share password? all column data
+    try {
+      const { shared_to_email, password_id, url, login, password, label } = payload;
+
+      // verify shared_to_email
+      if (!shared_to_email || shared_to_email.length === 0) {
+        throw new ValidationError("shared_to_id was not assigned a value");
+      }
+      const shared_to_user = await User.findByEmail(shared_to_email);
+
+      // verify password_id
+    } catch (error) {
+      throw error;
+    }
   };
 
   return Password;
