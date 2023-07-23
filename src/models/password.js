@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, Op } = require("sequelize");
 const user = require("./user");
 const { ValidationError, UnauthorizedError, NotFoundError, InternalError } = require("../errors/errors");
 const { uuidWithPrefix } = require("../utils/uuid");
@@ -212,6 +212,38 @@ module.exports = (sequelize, DataTypes) => {
 
       const sharedPassword = await Password.createPassword(payload);
       return sharedPassword;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  Password.getSharedPasswords = async (ownerId) => {
+    try {
+      // ADD ENCRYPT/DECRYPT?
+      if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
+
+      const row_list = await Password.findAll({
+        where: {
+          owner_id: ownerId,
+          shared_to_id: {
+            [Op.and]: {
+              [Op.not]: null, // shared_to_id is not null
+              [Op.ne]: "", // shared_to_id is not empty
+            },
+          },
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
+
+      // will not handle decrypting the data yet, add that later
+      const password_list = [];
+      row_list.map((row) => {
+        password_list.push(row.dataValues);
+      });
+
+      return password_list;
     } catch (error) {
       throw error;
     }
