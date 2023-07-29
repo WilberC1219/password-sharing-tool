@@ -89,6 +89,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  // Define the association to the User model
+  Password.belongsTo(User, { foreignKey: "shared_to_id", as: "shared_to_user" });
+
   //things that must be done before password is saved to database
   Password.beforeCreate(async (password) => {
     if (!password.owner_id || password.owner_id.length === 0) {
@@ -235,6 +238,13 @@ module.exports = (sequelize, DataTypes) => {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        include: [
+          {
+            model: User,
+            as: "shared_to_user", // This should match the alias you used in the association
+            attributes: ["email"], // Include only the email attribute from the User model
+          },
+        ],
       });
 
       // will not handle decrypting the data yet, add that later
