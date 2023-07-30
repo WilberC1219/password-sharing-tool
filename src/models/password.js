@@ -156,10 +156,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       // will not handle decrypting the data yet, add that later
-      const password_list = [];
-      row_list.map((row) => {
-        password_list.push(row.dataValues);
-      });
+      const password_list = row_list.map((row) => row.dataValues);
 
       return password_list;
     } catch (error) {
@@ -248,11 +245,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       // will not handle decrypting the data yet, add that later
-      const password_list = [];
-      row_list.map((row) => {
-        password_list.push(row.dataValues);
-      });
-
+      const password_list = row_list.map((row) => row.dataValues);
       return password_list;
     } catch (error) {
       throw error;
