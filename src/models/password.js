@@ -217,7 +217,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  Password.getSharedPasswords = async (ownerId) => {
+  // design function to geg passwords shared with ownerId and passwords shared shared by ownerId
+  Password.getSharedPasswords = async (ownerId, queryOptions) => {
     try {
       // ADD ENCRYPT/DECRYPT?
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
