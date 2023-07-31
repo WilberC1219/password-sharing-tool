@@ -91,6 +91,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Define the association to the User model
   Password.belongsTo(User, { foreignKey: "shared_to_id", as: "shared_to_user" });
+  Password.belongsTo(User, { foreignKey: "owner_id", as: "shared_by_user" });
 
   //things that must be done before password is saved to database
   Password.beforeCreate(async (password) => {
@@ -223,7 +224,8 @@ module.exports = (sequelize, DataTypes) => {
       // ADD ENCRYPT/DECRYPT?
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
 
-      const row_list = await Password.findAll({
+      const shared_by_owner = await Password.findAll({
+        // list of passwords ownerId has shared
         where: {
           owner_id: ownerId,
           shared_to_id: {
@@ -245,9 +247,27 @@ module.exports = (sequelize, DataTypes) => {
         ],
       });
 
+      const shared_with_owner = await Password.findAll({
+        // list of passwords shared with ownerId
+        where: {
+          shared_to_id: ownerId,
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+        include: [
+          {
+            model: User,
+            as: "shared_by_user", // This should match the alias you used in the association
+            attributes: ["email"], // Include only the email attribute from the User model
+          },
+        ],
+      });
+
       // will not handle decrypting the data yet, add that later
-      const password_list = row_list.map((row) => row.dataValues);
-      return password_list;
+      const by_owner_password_list = shared_by_owner.map((row) => row.dataValues);
+      const with_owner_password_list = shared_with_owner.map((row) => row.dataValues);
+      return { shared_by_owner: by_owner_password_list, shared_with_owner: with_owner_password_list };
     } catch (error) {
       throw error;
     }
