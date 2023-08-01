@@ -167,5 +167,25 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  /**
+   * Find a User by its id.
+   * @param {string} id - The id of the User to be found.
+   * @throws {ValidationError} If the provided id is null or empty.
+   * @throws {NotFoundError} If no User is found with the provided id.
+   * @returns {Object} the User object associated with the id.
+   */
+  User.findById = async (id) => {
+    try {
+      if (!id || id.length === 0) {
+        throw new ValidationError("user id cannot be null or empty");
+      }
+
+      const usr = await User.findOne({ where: { id } });
+      if (!usr) throw new NotFoundError(`No user found with id ${id}`);
+      return usr;
+    } catch (error) {
+      throw error;
+    }
+  };
   return User;
 };
