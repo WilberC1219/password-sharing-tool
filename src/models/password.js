@@ -94,29 +94,29 @@ module.exports = (sequelize, DataTypes) => {
   Password.belongsTo(User, { foreignKey: "owner_id", as: "shared_by_user" });
 
   //things that must be done before password is saved to database
-  Password.beforeCreate(async (password) => {
-    if (!password.owner_id || password.owner_id.length === 0) {
-      throw new ValidationError("owner_id was not assigned a value!");
-    }
-
-    if (password.owner_id === password.shared_to_id) {
-      throw new ValidationError("owner_id cannot be equal to shared_to_id!");
-    }
-
+  Password.beforeCreate(async (password, options) => {
     try {
-      // ADD ENCRYPT/DECRYPT
-      password.id = uuidWithPrefix(true, "pwd");
-      // login, password, lable must be encrypted with key.
-      /*
-      password.login = encrypt(password.login, key);
-      password.password = encrypt(password.password, key);
-      password.label = encrypt(password.label, key);
+      if (!password.owner_id || password.owner_id.length === 0) {
+        throw new ValidationError("owner_id was not assigned a value!");
+      }
 
-      // hash key
-      password.key = await hashStr(password.key);
-      */
+      if (!options.key || options.key.length === 0) {
+        throw new ValidationError("key was not assigned a value!");
+      }
+
+      if (password.owner_id === password.shared_to_id) {
+        throw new ValidationError("owner_id cannot be equal to shared_to_id!");
+      }
+
+      const user = await User.findById(password.owner_id);
+      const validKey = await compare(options.key, user.key);
+      if (!validKey) throw new ValidationError("Invalid key entered");
+
+      password.id = uuidWithPrefix(true, "pwd");
+      password.login = encrypt(password.login, options.key);
+      password.password = encrypt(password.password, options.key);
     } catch (error) {
-      throw new InternalError();
+      throw error;
     }
   });
 
@@ -130,7 +130,7 @@ module.exports = (sequelize, DataTypes) => {
   Password.createPassword = async (payload) => {
     try {
       const trxResult = await sequelize.transaction(async (t) => {
-        const pwd = await Password.create(payload, { transaction: t });
+        const pwd = await Password.create(payload, { transaction: t, key: payload.key });
         return pwd;
       });
 
@@ -141,12 +141,11 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   // retrieves all saved password of provided id
-  Password.getSavedPasswords = async (ownerId) => {
+  Password.getSavedPasswords = async (ownerId, key) => {
     try {
-      // ADD ENCRYPT/DECRYPT?
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
 
-      const row_list = await Password.findAll({
+      const saved_list = await Password.findAll({
         where: {
           owner_id: ownerId,
           shared_to_id: null,
@@ -156,10 +155,13 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      // will not handle decrypting the data yet, add that later
-      const password_list = row_list.map((row) => row.dataValues);
+      const saved_password_list = saved_list.map((row) => {
+        row.dataValues.login = decrypt(row.dataValues.login, key);
+        row.dataValues.password = decrypt(row.dataValues.password, key);
+        return row;
+      });
 
-      return password_list;
+      return saved_password_list;
     } catch (error) {
       throw error;
     }
@@ -189,9 +191,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  Password.sharePassword = async (ownerId, sharedToEmail, id) => {
+  Password.sharePassword = async (ownerId, sharedToEmail, id, key) => {
     try {
-      // ADD ENCRYPT/DECRYPT
       if (!sharedToEmail || sharedToEmail.length === 0) {
         throw new ValidationError("shared_to_id was not assigned a value");
       }
