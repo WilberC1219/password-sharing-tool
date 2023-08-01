@@ -147,6 +147,7 @@ A password sharing tool designed for sharing passwords securely
 #### `HTTP header`
 
 - `Content-Type` : `application/json`
+- `Authorization`: `Bearer {TOKEN}`
 
 #### `Request body`
 
@@ -179,6 +180,60 @@ A password sharing tool designed for sharing passwords securely
 // Success response body
 {
     message: `Password was successfully saved!`
+}
+```
+
+- If the request was not successfull: [Response body error](#response-body-error)
+
+### `/share-password`
+
+#### `HTTP request`
+
+- The `/share-password` endpoint is designed to enable the sharing of a user's saved password with another user who also has an account:<br>`POST http://localhost:{ENV_PORT}/share-password`
+
+#### `HTTP header`
+
+- `Content-Type` : `application/json`
+- `Authorization`: `Bearer {TOKEN}`
+
+#### `Request body`
+
+- contains share password object
+
+```
+// share password object representation
+{
+	"shared_to_email": string,
+	"password_id": string,
+	"key": string
+}
+```
+
+| Fields            |                                                                      |
+| ----------------- | -------------------------------------------------------------------- |
+| `shared_to_email` | The recipient's email address for whom the password is being shared. |
+| `password_id`     | The password that is being shared.                                   |
+| `key`             | The encryption key of the user.                                      |
+
+#### `Response body`
+
+- If the request is successful, you will receive a response:
+
+```
+// Success response body
+{
+    message: `Successfully shared password with ${shared_to_email}`,
+    shared_password: {
+		"id": "PASSWORD_ID",
+		"owner_id": "OWNER_ID",
+		"shared_to_id": "SHARED_TO_ID",
+		"url": "URL",
+		"login": "ENCRYPTED_LOGIN",
+        "password":"ENCRYPTED_PASSWORD",
+		"label": "LABEL",
+		"updatedAt": "2023-08-01T12:38:59.450Z",
+		"createdAt": "2023-08-01T12:38:59.450Z"
+	}
 }
 ```
 
