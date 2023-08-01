@@ -17,15 +17,4 @@ async function genJwt(payload) {
   }
 }
 
-// decode jwt and return if valid. (currently does not handle the
-// expiration of token)
-async function verifyJwt(token) {
-  try {
-    const decoded = await verify(token, process.env.JWT_SECRET);
-    return decoded;
-  } catch (error) {
-    throw new UnauthorizedError("Unauthorized, please log in");
-  }
-}
-
-module.exports = { genJwt, verifyJwt };
+module.exports = { genJwt };
