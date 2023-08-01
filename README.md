@@ -72,11 +72,11 @@ A password sharing tool designed for sharing passwords securely
 | `password`  | The password of the user.       |
 | `key`       | The encryption key of the user. |
 
-All fields cannot be null or empty strings. In addition, the `password` field must be 8 to 16 characters long and the `key` field must be 6 to 10 characters long.
+- All fields cannot be null or empty strings. In addition, the `password` field must be 8 to 16 characters long and the `key` field must be 6 to 10 characters long.
 
 #### `Response body`
 
-If the request is successful, you will receive a response:
+- If the request is successful, you will receive a response:
 
 ```
 // Success response body
@@ -85,7 +85,7 @@ If the request is successful, you will receive a response:
 }
 ```
 
-If the request was not successfull: [Response body error](#response-body-error)
+- If the request was not successfull: [Response body error](#response-body-error)
 
 ### `/login`
 
@@ -118,7 +118,7 @@ If the request was not successfull: [Response body error](#response-body-error)
 
 #### `Response body`
 
-If the request is successful, you will receive a response:
+- If the request is successful, you will receive a response:
 
 ```
 // Success response body
@@ -134,13 +134,13 @@ If the request is successful, you will receive a response:
 }
 ```
 
-The `token` serves as the user's session identifier and will be used in future requests. It is stored and included in the `Authorization` header for endpoints that require authorization. The token has a validity of 1 hour, requiring the user to log in again to obtain a new token after that period.
+- The `token` serves as the user's session identifier and will be used in future requests. It is stored and included in the `Authorization` header for endpoints that require authorization. The token has a validity of 1 hour, requiring the user to log in again to obtain a new token after that period.
 
-If the request was not successfull: [Response body error](#response-body-error)
+- If the request was not successfull: [Response body error](#response-body-error)
 
 ## Response body error
 
-If any error occurs after making a request, the response body will provide information regarding the specific error encountered.
+- If any error occurs after making a request, the response body will provide information regarding the specific error encountered.
 
 ```
 {
