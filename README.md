@@ -31,11 +31,38 @@ A password sharing tool designed for sharing passwords securely
 
 ## Setup and Installation
 
-- Coming Soon
-
 ## Database Schema
 
-- Coming Soon
+### Users table
+
+- The "Users" table contains records for all users.
+
+| Column     | Type         | Constraints          | Description                            |
+| ---------- | ------------ | -------------------- | -------------------------------------- |
+| id         | UUID         | pk, unique, not null | A unique id tied to a user             |
+| first_name | varchar(255) | not null             | User's first name                      |
+| last_name  | varchar(255) | not null             | User's last name                       |
+| email      | varchar(255) | unique, not null     | User's email address                   |
+| key        | varchar(255) | not null             | Hashed user encryption key             |
+| password   | varchar(255) | not null             | Hashed user password                   |
+| created_at | datetime     | default: `now()`     | Datetime user was added to the table   |
+| updated_at | datetime     | default: `now()`     | Datetime user was updated in the table |
+
+### Passwords table
+
+- The table "Passwords" stores both shared and saved passwords.
+
+| Column         | Type         | Constraints          | Description                                              |
+| -------------- | ------------ | -------------------- | -------------------------------------------------------- |
+| id             | UUID         | pk, unique, not null | A unique id for each login and password that is shared   |
+| owner_id       | UUID         | ref: > users.id      | The id tied to the user that shared the credentials      |
+| shared_with_id | UUID         | ref: > users.id      | The id tied to the user receiving the shared credentials |
+| label          | text         |                      | Label for login credentials                              |
+| url            | varchar(255) | not null             | Url associated with the login and password               |
+| login          | varchar(255) | not null             | Encrypted login information such as email or username    |
+| password       | varchar(255) | not null             | Encrypted password                                       |
+| created_at     | datetime     | default: `now()`     | Datetime when login and password were saved              |
+| updated_at     | datetime     | default: `now()`     | Datetime when login and password were last updated       |
 
 ## Api Endpoints
 
