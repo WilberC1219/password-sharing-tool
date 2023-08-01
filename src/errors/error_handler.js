@@ -1,4 +1,3 @@
-const { InternalError } = require("./errors");
 /**
  * Generates a standardized error response data on the provided error object.
  * @param {Error} error - The error object.
