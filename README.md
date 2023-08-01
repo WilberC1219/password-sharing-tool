@@ -39,7 +39,118 @@ A password sharing tool designed for sharing passwords securely
 
 ## Api Endpoints
 
--
+### `/signup`
+
+#### `HTTP request`
+
+- The `/signup` endpoint is designed to handle user registration:<br>`POST http://localhost:{ENV_PORT}/signup`
+
+#### `HTTP header`
+
+- `Content-Type` : `application/json`
+
+#### `Request body`
+
+- contains an object that represents an instance of a `User`
+
+```
+// User object representation
+{
+	"firstName": string,
+    "lastName": string"
+	"email": string,
+	"password": string,
+	"key": string
+}
+```
+
+| Fields      |                                 |
+| ----------- | ------------------------------- |
+| `firstName` | The first name of the user.     |
+| `lastName`  | The last name of the user.      |
+| `email`     | The email address of the user.  |
+| `password`  | The password of the user.       |
+| `key`       | The encryption key of the user. |
+
+All fields cannot be null or empty strings. In addition, the `password` field must be 8 to 16 characters long and the `key` field must be 6 to 10 characters long.
+
+#### `Response body`
+
+If the request is successful, you will receive a response:
+
+```
+// Success response body
+{
+    message: `Sign up was successful!`
+}
+```
+
+If the request was not successfull: [Response body error](#response-body-error)
+
+### `/login`
+
+#### `HTTP request`
+
+- The `/login` endpoint designed to handle a user logging in:<br>`POST http://localhost:{ENV_PORT}/login`
+
+#### `HTTP header`
+
+- `Content-Type` : `application/json`
+
+#### `Request body`
+
+- contains login credentials object
+
+```
+// login credentials object representation
+{
+	"email": string,
+	"password": string,
+	"key": string
+}
+```
+
+| Fields     |                                 |
+| ---------- | ------------------------------- |
+| `email`    | The email address of the user.  |
+| `password` | The password of the user.       |
+| `key`      | The encryption key of the user. |
+
+#### `Response body`
+
+If the request is successful, you will receive a response:
+
+```
+// Success response body
+{
+    message: "Login was successful",
+    payload: {
+        user: {
+            firstName, // user's first name
+            email // user's email address
+        },
+        token: jwt // token for user's session.
+    }
+}
+```
+
+The `token` serves as the user's session identifier and will be used in future requests. It is stored and included in the `Authorization` header for endpoints that require authorization.
+
+If the request was not successfull: [Response body error](#response-body-error)
+
+## Response body error
+
+If any error occurs after making a request, the response body will provide information regarding the specific error encountered.
+
+```
+{
+    errorMessage: "SOME_ERROR_MESSAGE",
+    errorDetails:{
+        type: "ERROR_NAME",
+        cause:"ERROR_CAUSE"
+    }
+}
+```
 
 ## Available Scripts
 
@@ -76,3 +187,7 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact
 
 For any inquiries or questions, please contact me at wilberclaudio@gmail.com.
+
+```
+
+```
