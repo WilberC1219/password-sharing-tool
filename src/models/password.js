@@ -210,6 +210,8 @@ module.exports = (sequelize, DataTypes) => {
 
   Password.sharePassword = async (ownerId, sharedToEmail, id, key) => {
     try {
+      if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
+
       if (!key || key.length === 0) throw new ValidationError("key was not assigned a value!");
 
       if (!sharedToEmail || sharedToEmail.length === 0) {
@@ -241,10 +243,11 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   // design function to geg passwords shared with ownerId and passwords shared shared by ownerId
-  Password.getSharedPasswords = async (ownerId, queryOptions) => {
+  Password.getSharedPasswords = async (ownerId, key) => {
     try {
-      // ADD ENCRYPT/DECRYPT?
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
+
+      if (!key || key.length === 0) throw new ValidationError("key was not assigned a value!");
 
       const shared_by_owner = await Password.findAll({
         // list of passwords ownerId has shared
@@ -286,9 +289,17 @@ module.exports = (sequelize, DataTypes) => {
         ],
       });
 
-      // will not handle decrypting the data yet, add that later
-      const by_owner_password_list = shared_by_owner.map((row) => row.dataValues);
-      const with_owner_password_list = shared_with_owner.map((row) => row.dataValues);
+      const by_owner_password_list = shared_by_owner.map((row) => {
+        row.dataValues.login = decrypt(row.dataValues.login, process.env["SYS_ENC_KEY"]);
+        row.dataValues.password = decrypt(row.dataValues.password, process.env["SYS_ENC_KEY"]);
+        return row;
+      });
+      const with_owner_password_list = shared_with_owner.map((row) => {
+        row.dataValues.login = decrypt(row.dataValues.login, process.env["SYS_ENC_KEY"]);
+        row.dataValues.password = decrypt(row.dataValues.password, process.env["SYS_ENC_KEY"]);
+        return row;
+      });
+
       return { shared_by_owner: by_owner_password_list, shared_with_owner: with_owner_password_list };
     } catch (error) {
       throw error;
