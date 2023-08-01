@@ -9,7 +9,7 @@ A password sharing tool designed for sharing passwords securely
 - [Technologies used](#technologies-used)
 - [Setup and Installation](#setup-and-installation)
 - [Database Schema](#database-schema)
-- [Api Endpoints](#api-endpoints)
+- [API Endpoints](#api-endpoints)
 - [Available Scripts](#available-scripts)
 
 ## Features
@@ -66,7 +66,7 @@ A password sharing tool designed for sharing passwords securely
 | created_at     | datetime     | default: `now()`     | Datetime when login and password were saved              |
 | updated_at     | datetime     | default: `now()`     | Datetime when login and password were last updated       |
 
-## Api Endpoints
+## API Endpoints
 
 ### `/signup`
 
