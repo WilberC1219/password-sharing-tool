@@ -33,6 +33,24 @@ A password sharing tool designed for sharing passwords securely
 
 ## Setup and Installation
 
+1. Install sqlite https://www.sqlite.org/download.html
+2. Clone the project
+3. After cloning the project, navigate to the root directory of the project and create a `.env` file. Below are the necessary environment variables. You are welcome to modify the values of each variable as desired.
+
+```
+PORT=3000
+JWT_SECRET=MySecretKey123$@!
+NODE_ENV=development
+SYS_ENC_KEY=ThIsIsMySyStEmEnCrPtIoNkEy12345!$
+```
+
+4. While inside the root directory of the project run the following commands in order:
+
+   1. `npm install`
+   2. `npm run migrate:up`
+
+5. Setup and installation is complete. Start the server by running `npm run start`
+
 ## Database Schema
 
 ### Users table
