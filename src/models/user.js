@@ -129,19 +129,22 @@ module.exports = (sequelize, DataTypes) => {
    */
   User.login = async (payload) => {
     try {
-      let { email, password } = payload;
-      if (!email || !password) throw new ValidationError("login info cannot be null");
+      let { email, password, key } = payload;
+      if (!email || !password || !key) throw new ValidationError("login info cannot be null");
 
       email = email.toLowerCase();
       const usr = await User.findOne({ where: { email } });
       if (!usr) throw new NotFoundError(`No user found with email ${email}`);
 
-      const match = await compare(password, usr.password);
-      if (!match) throw new UnauthorizedError(`Invalid password entered`);
+      const password_match = await compare(password, usr.password);
+      if (!password_match) throw new UnauthorizedError(`Invalid password entered`);
+
+      const key_match = await compare(key, usr.key);
+      if (!key_match) throw new UnauthorizedError(`Invalid key entered`);
 
       const { id, firstName } = usr;
-      const jwt = await genJwt({ id, firstName, email });
-      return { user: { firstName, email }, token: jwt }; //might be need to remove the user object, seems useless
+      const jwt = await genJwt({ id, firstName, email, key });
+      return { user: { firstName, email }, token: jwt };
     } catch (error) {
       throw error;
     }
