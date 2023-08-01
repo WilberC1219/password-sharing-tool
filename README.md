@@ -91,7 +91,7 @@ A password sharing tool designed for sharing passwords securely
 
 #### `HTTP request`
 
-- The `/login` endpoint designed to handle a user logging in:<br>`POST http://localhost:{ENV_PORT}/login`
+- The `/login` endpoint is designed to handle a user logging in:<br>`POST http://localhost:{ENV_PORT}/login`
 
 #### `HTTP header`
 
@@ -135,6 +135,52 @@ A password sharing tool designed for sharing passwords securely
 ```
 
 - The `token` serves as the user's session identifier and will be used in future requests. It is stored and included in the `Authorization` header for endpoints that require authorization. The token has a validity of 1 hour, requiring the user to log in again to obtain a new token after that period.
+
+- If the request was not successfull: [Response body error](#response-body-error)
+
+### `/save-password`
+
+#### `HTTP request`
+
+- The `/save-password` endpoint is designed to store a user's password:<br>`POST http://localhost:{ENV_PORT}/save-password`
+
+#### `HTTP header`
+
+- `Content-Type` : `application/json`
+
+#### `Request body`
+
+- contains login credentials for a platform
+
+```
+// login credentials object representation
+{
+	"url": string,
+	"login": string,
+	"password": string,
+	"label": string,
+	"key": string
+}
+```
+
+| Fields     |                                                                     |
+| ---------- | ------------------------------------------------------------------- |
+| `url`      | The url that is associated with the login credentials.              |
+| `login`    | The login that is associated with the login credentials.            |
+| `password` | The password that is associated with the login credentials.         |
+| `label`    | The label which is use to give context about the login credentials. |
+| `key`      | The encryption key of the user.                                     |
+
+#### `Response body`
+
+- If the request is successful, you will receive a response:
+
+```
+// Success response body
+{
+    message: `Password was successfully saved!`
+}
+```
 
 - If the request was not successfull: [Response body error](#response-body-error)
 
