@@ -6,9 +6,11 @@ A password sharing tool designed for sharing passwords securely
 
 - [Password sharing tool description](#password-sharing-tool)
 - [Features](#features)
+- [Technologies used](#technologies-used)
 - [Setup and Installation](#setup-and-installation)
-- [Usage](#usage)
 - [Database Schema](#database-schema)
+- [Api Endpoints](#api-endpoints)
+- [Available Scripts](#available-scripts)
 
 ## Features
 
@@ -20,7 +22,7 @@ A password sharing tool designed for sharing passwords securely
 
 - Sharing: Users can securely share any of their saved login credentials. The server utilizes the server environment encryption key to safeguard any shared login information.
 
-- Viewing: Users have the convenience of accessing all their stored login credentials. The passwords owned by the user will be grouped under the `My passwords` tab, while passwords shared with the user will be under the `Passwords shared with me` tab.
+- Viewing: Users have the convenience of accessing all their stored login credentials. The logged-in user can view all the passwords they have stored and shared, as well as all the passwords that have been shared with them.
 
 - Sessions: Users have the convenience of login sessions, which eliminates the need to sign in each time they access the password sharing tool. These sessions remain valid for one hour and are securely stored on the user's end using a JSON Web Token.
 
@@ -35,7 +37,7 @@ A password sharing tool designed for sharing passwords securely
 
 ### Users table
 
-- The "Users" table contains records for all users.
+- The `Users` table contains records for all users.
 
 | Column     | Type         | Constraints          | Description                            |
 | ---------- | ------------ | -------------------- | -------------------------------------- |
@@ -50,7 +52,7 @@ A password sharing tool designed for sharing passwords securely
 
 ### Passwords table
 
-- The table "Passwords" stores both shared and saved passwords.
+- The table `Passwords` stores both shared and saved passwords.
 
 | Column         | Type         | Constraints          | Description                                              |
 | -------------- | ------------ | -------------------- | -------------------------------------------------------- |
