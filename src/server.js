@@ -58,9 +58,9 @@ app.post("/login", async (req, res) => {
 app.post("/save-password", async (req, res) => {
   try {
     const owner_id = req.auth.id;
-    const { url, login, password, label } = req.body;
+    const { url, login, password, label, key } = req.body;
 
-    const result = await Password.createPassword({ owner_id, url, login, password, label });
+    const result = await Password.createPassword({ owner_id, url, login, password, label, key });
     res.status(200).json({ message: `Password was successfully saved!` });
   } catch (error) {
     console.error(error);
@@ -73,7 +73,8 @@ app.post("/save-password", async (req, res) => {
 app.post("/list-saved-passwords", async (req, res) => {
   try {
     const owner_id = req.auth.id;
-    const result = await Password.getSavedPasswords(owner_id);
+    const key = req.body.key;
+    const result = await Password.getSavedPasswords(owner_id, key);
 
     res.status(200).json({ message: `Successfully retrieved saved passwords!`, data: result });
   } catch (error) {
@@ -87,8 +88,8 @@ app.post("/list-saved-passwords", async (req, res) => {
 app.post("/share-password", async (req, res) => {
   try {
     const owner_id = req.auth.id;
-    const { shared_to_email, password_id } = req.body;
-    const pwd = await Password.sharePassword(owner_id, shared_to_email, password_id);
+    const { shared_to_email, password_id, key } = req.body;
+    const pwd = await Password.sharePassword(owner_id, shared_to_email, password_id, key);
     res.status(200).json({ message: `Successfully shared password with ${shared_to_email}`, shared_password: pwd });
   } catch (error) {
     console.error(error);
@@ -101,7 +102,8 @@ app.post("/share-password", async (req, res) => {
 app.post("/list-shared-passwords", async (req, res) => {
   try {
     const owner_id = req.auth.id;
-    const result = await Password.getSharedPasswords(owner_id);
+    const key = req.body.key;
+    const result = await Password.getSharedPasswords(owner_id, key);
     res.status(200).json({ message: `Successfully retrieved shared passwords!`, data: result });
   } catch (error) {
     console.error(error);
