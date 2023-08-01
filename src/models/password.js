@@ -145,6 +145,8 @@ module.exports = (sequelize, DataTypes) => {
     try {
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
 
+      if (!key || key.length === 0) throw new ValidationError("key was not assigned a value!");
+
       const saved_list = await Password.findAll({
         where: {
           owner_id: ownerId,
@@ -170,21 +172,25 @@ module.exports = (sequelize, DataTypes) => {
   /**
    * Find a password by its id.
    * @param {string} id - The id of the password to be found.
-   * @throws {ValidationError} If the provided id is null or empty.
+   * @throws {ValidationError} If the provided id or key is null or empty.
    * @throws {NotFoundError} If no password is found with the provided id.
    * @returns {Object} the password object associated with the id.
    * Note that the returned password object will still have the Url, login,
    * password, and label encrypted.
    */
-  Password.findById = async (id) => {
+  Password.findById = async (id, key) => {
     try {
-      // ADD ENCRYPT/DECRYPT
       if (!id || id.length === 0) {
         throw new ValidationError("password id cannot be null or empty");
       }
 
+      if (!key || key.length === 0) throw new ValidationError("key was not assigned a value!");
+
       const pwd = await Password.findOne({ where: { id } });
       if (!pwd) throw new NotFoundError(`No password found with id ${id}`);
+
+      pwd.login = decrypt(pwd.login, key);
+      pwd.password = decrypt(pwd.password, key);
       return pwd;
     } catch (error) {
       throw error;
