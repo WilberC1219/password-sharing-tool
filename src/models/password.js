@@ -4,8 +4,6 @@ const user = require("./user");
 const { ValidationError, UnauthorizedError, NotFoundError, InternalError } = require("../errors/errors");
 const { uuidWithPrefix } = require("../utils/uuid");
 const { compare } = require("bcryptjs");
-const { hashStr } = require("../utils/hash");
-const { genJwt } = require("../utils/genjwt");
 const { encrypt, decrypt } = require("../utils/encryption");
 
 module.exports = (sequelize, DataTypes) => {
