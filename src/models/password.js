@@ -112,9 +112,16 @@ module.exports = (sequelize, DataTypes) => {
       const validKey = await compare(options.key, user.key);
       if (!validKey) throw new ValidationError("Invalid key entered");
 
+      const enc_key = options.sys_enc ? process.env["SYS_ENC_KEY"] : options.key;
+      if (options.sys_enc) {
+        console.log("using SYS_ENC");
+      } else {
+        console.log("using options.key");
+      }
+
       password.id = uuidWithPrefix(true, "pwd");
-      password.login = encrypt(password.login, options.key);
-      password.password = encrypt(password.password, options.key);
+      password.login = encrypt(password.login, enc_key);
+      password.password = encrypt(password.password, enc_key);
     } catch (error) {
       throw error;
     }
@@ -130,7 +137,11 @@ module.exports = (sequelize, DataTypes) => {
   Password.createPassword = async (payload) => {
     try {
       const trxResult = await sequelize.transaction(async (t) => {
-        const pwd = await Password.create(payload, { transaction: t, key: payload.key });
+        const pwd = await Password.create(payload, {
+          transaction: t,
+          key: payload.key,
+          sys_enc: payload.sys_enc ? true : false,
+        });
         return pwd;
       });
 
@@ -199,6 +210,8 @@ module.exports = (sequelize, DataTypes) => {
 
   Password.sharePassword = async (ownerId, sharedToEmail, id, key) => {
     try {
+      if (!key || key.length === 0) throw new ValidationError("key was not assigned a value!");
+
       if (!sharedToEmail || sharedToEmail.length === 0) {
         throw new ValidationError("shared_to_id was not assigned a value");
       }
@@ -207,7 +220,7 @@ module.exports = (sequelize, DataTypes) => {
       if (!id || id.length === 0) {
         throw new ValidationError("password id was not assigned a value");
       }
-      const pwdFound = await Password.findById(id);
+      const pwdFound = await Password.findById(id, key);
 
       const payload = {
         owner_id: ownerId,
@@ -216,6 +229,8 @@ module.exports = (sequelize, DataTypes) => {
         login: pwdFound.login,
         password: pwdFound.password,
         label: pwdFound.label,
+        key: key,
+        sys_enc: true,
       };
 
       const sharedPassword = await Password.createPassword(payload);
