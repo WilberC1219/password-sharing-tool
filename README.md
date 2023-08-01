@@ -281,6 +281,69 @@ A password sharing tool designed for sharing passwords securely
 
 - If the request was not successfull: [Response body error](#response-body-error)
 
+### `/list-shared-passwords`
+
+#### `HTTP request`
+
+- The `/list-shared-passwords` endpoint is designed to retrieve a list of shared passwords that involve the currently logged-in user. This includes both a list of passwords shared by the logged-in user and a list of passwords shared with the logged-in user by others:<br>`POST http://localhost:{ENV_PORT}/list-shared-passwords`
+
+#### `HTTP header`
+
+- `Content-Type` : `application/json`
+- `Authorization`: `Bearer {TOKEN}`
+
+#### `Request body`
+
+- no fields required
+
+```
+// list-shared-passwords request body
+{}
+```
+
+#### `Response body`
+
+- If the request is successful, you will receive a response:
+
+```
+// Success response body
+{
+	"message": "Successfully retrieved shared passwords!",
+	"data": {
+		"shared_by_owner": [ // list of passwords shared by the logged in user
+			{
+				"id": "PASSWORD_ID",
+				"owner_id": "OWNER_ID",
+				"shared_to_id": "SHARED_TO_ID",
+				"url": "URL",
+				"login": "DECRYPTED_LOGIN",
+				"password": "DECRYPTED_PASSWORD",
+				"label": "LABEL",
+				"shared_to_user": {  // Email of user that this password was shared with
+					"email": "SHARED_TO_EMAIL"
+				}
+			}
+		],
+		"shared_with_owner": [ // list of passwords shared with the logged in user
+			{
+				"id": "PASSWORD_ID",
+				"owner_id": "OWNER_ID",
+				"shared_to_id": "SHARED_TO_ID",
+				"url": "URL",
+				"login": "DECRYPTED_LOGIN",
+				"password": "DECRYPTED_PASSWORD",
+				"label": "LABEL",
+				"shared_by_user": { // Email of user that shared this password with logged in user
+					"email": "SHARED_BY_EMAIL"
+				}
+			}
+		]
+	}
+}
+```
+
+- If the request was not successfull: [Response body error](#response-body-error)
+
 ## Response body error
 
 - If any error occurs after making a request, the response body will provide information regarding the specific error encountered.
