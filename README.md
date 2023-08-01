@@ -239,6 +239,48 @@ A password sharing tool designed for sharing passwords securely
 
 - If the request was not successfull: [Response body error](#response-body-error)
 
+### `/list-saved-passwords`
+
+#### `HTTP request`
+
+- The `/list-saved-passwords` endpoint is designed to fetch all the saved passwords of the currently logged-in user:<br>`POST http://localhost:{ENV_PORT}/list-saved-passwords`
+
+#### `HTTP header`
+
+- `Content-Type` : `application/json`
+- `Authorization`: `Bearer {TOKEN}`
+
+#### `Request body`
+
+- no fields required
+
+```
+// list-saved-passwords request body
+{}
+```
+
+#### `Response body`
+
+- If the request is successful, you will receive a response:
+
+```
+// Success response body
+{
+	"message": "Successfully retrieved saved passwords!",
+	"data": [ // list of saved passwords
+		{
+			"id": "PASSWORD_ID",
+			"url": "URL",
+			"login": "DECRYPTED_LOGIN",
+			"password": ""DECRYPTED_PASSWORD",
+			"label": "LABEL"
+		}
+	]
+}
+```
+
+- If the request was not successfull: [Response body error](#response-body-error)
+
 ## Response body error
 
 - If any error occurs after making a request, the response body will provide information regarding the specific error encountered.
