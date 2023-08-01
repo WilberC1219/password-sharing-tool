@@ -134,7 +134,7 @@ If the request is successful, you will receive a response:
 }
 ```
 
-The `token` serves as the user's session identifier and will be used in future requests. It is stored and included in the `Authorization` header for endpoints that require authorization.
+The `token` serves as the user's session identifier and will be used in future requests. It is stored and included in the `Authorization` header for endpoints that require authorization. The token has a validity of 1 hour, requiring the user to log in again to obtain a new token after that period.
 
 If the request was not successfull: [Response body error](#response-body-error)
 
