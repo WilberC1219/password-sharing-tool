@@ -89,11 +89,17 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Define the association to the User model
+  // the association to the User model
   Password.belongsTo(User, { foreignKey: "shared_to_id", as: "shared_to_user" });
   Password.belongsTo(User, { foreignKey: "owner_id", as: "shared_by_user" });
 
-  //things that must be done before password is saved to database
+  /**
+   * Before-create hook for the Password model.
+   * This function is executed before a new password record is saved to the database.
+   * @param {object} password - The password instance being created.
+   * @param {object} options - Additional options passed to the create operation.
+   * @throws {ValidationError} - If any required parameters are missing or invalid.
+   */
   Password.beforeCreate(async (password, options) => {
     try {
       if (!password.owner_id || password.owner_id.length === 0) {
@@ -113,12 +119,6 @@ module.exports = (sequelize, DataTypes) => {
       if (!validKey) throw new ValidationError("Invalid key entered");
 
       const enc_key = options.sys_enc ? process.env["SYS_ENC_KEY"] : options.key;
-      if (options.sys_enc) {
-        console.log("using SYS_ENC");
-      } else {
-        console.log("using options.key");
-      }
-
       password.id = uuidWithPrefix(true, "pwd");
       password.login = encrypt(password.login, enc_key);
       password.password = encrypt(password.password, enc_key);
@@ -208,6 +208,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
+  /**
+   * Share a password with another user.
+   * @param {string} ownerId - The ID of the owner sharing the password.
+   * @param {string} sharedToEmail - The email of the user the password is being shared with.
+   * @param {string} id - The ID of the password being shared.
+   * @param {string} key - The encryption key to decrypt the password.
+   * @returns {Password} - A Promise that resolves to the newly created shared password.
+   * @throws {ValidationError} - If any of the required parameters are missing or invalid.
+   */
   Password.sharePassword = async (ownerId, sharedToEmail, id, key) => {
     try {
       if (!ownerId) throw new ValidationError("owner_id cannot be null or undefined. Log back in and try again.");
